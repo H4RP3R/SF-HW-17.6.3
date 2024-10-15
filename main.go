@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 )
 
 func sender(c chan<- int, done chan<- struct{}) {
@@ -18,12 +17,8 @@ func sender(c chan<- int, done chan<- struct{}) {
 }
 
 func receiver(c <-chan int) {
-	for {
-		if val, ok := <-c; ok {
-			fmt.Print(val, " ")
-		} else {
-			return
-		}
+	for val := range c {
+		fmt.Print(val, " ")
 	}
 }
 
@@ -35,5 +30,4 @@ func main() {
 	go receiver(intChan)
 
 	<-done
-	os.Exit(0)
 }
