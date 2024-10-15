@@ -4,19 +4,17 @@
 
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func sender(c chan<- int, done chan<- struct{}) {
+func sender(c chan<- int) {
 	defer close(c)
-	defer close(done)
 	for i := 1; i <= 100; i++ {
 		c <- i
 	}
 }
 
-func receiver(c <-chan int) {
+func receiver(c <-chan int, done chan<- struct{}) {
+	defer close(done)
 	for val := range c {
 		fmt.Print(val, " ")
 	}
@@ -26,8 +24,8 @@ func main() {
 	intChan := make(chan int)
 	done := make(chan struct{})
 
-	go sender(intChan, done)
-	go receiver(intChan)
+	go sender(intChan)
+	go receiver(intChan, done)
 
 	<-done
 }
